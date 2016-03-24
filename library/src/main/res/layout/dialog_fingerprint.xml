@@ -1,0 +1,70 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/dlg_bottom_margin"
+    android:paddingLeft="@dimen/dlg_action_margin"
+    android:paddingRight="@dimen/dlg_action_margin"
+    android:paddingTop="@dimen/dlg_action_margin">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/dlg_action_margin"
+        android:paddingLeft="@dimen/dlg_content_margin"
+        android:paddingRight="@dimen/dlg_content_margin"
+        android:paddingTop="@dimen/dlg_content_margin">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/DialogTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fp_title" />
+
+        <TextView
+            android:id="@+id/fp_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title"
+            android:text="@string/fp_ask"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <ImageView
+            android:id="@+id/fp_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fp_desc"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/fp_touch"
+            android:src="@mipmap/ic_fp_40px" />
+
+        <TextView
+            android:id="@+id/fp_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fp_desc"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/fp_icon"
+            android:layout_toRightOf="@id/fp_icon"
+            android:gravity="center_vertical"
+            android:minHeight="40dp"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:text="@string/fp_touch"
+            android:textStyle="italic" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/container"
+        android:text="@android:string/cancel" />
+
+</RelativeLayout>
