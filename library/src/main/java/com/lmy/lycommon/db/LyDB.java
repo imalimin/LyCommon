@@ -15,21 +15,21 @@ import java.util.Map;
 /**
  * Created by lmy on 2015/10/13.
  */
-public class ZDb implements IDb {
-    private final static String TAG = ZDb.class.getSimpleName();
+public class LyDB implements IDB {
+    private final static String TAG = LyDB.class.getSimpleName();
     private Context context;
-    private static ZDb instance;
+    private static LyDB instance;
     private SQLiteDatabase db;
     private DatebaseHelper datebaseHelper;
 
 
-    public synchronized static ZDb instance(Context context) {
+    public synchronized static LyDB instance(Context context) {
         if (instance == null)
-            instance = new ZDb(context);
+            instance = new LyDB(context);
         return instance;
     }
 
-    private ZDb(Context context) {
+    private LyDB(Context context) {
         this.context = context;
         this.datebaseHelper = new DatebaseHelper(context);
         init();
@@ -41,9 +41,9 @@ public class ZDb implements IDb {
 
     private void checkBeforeSave(Object obj) {
         check(obj.getClass());
-        String tableName = DbUtil.getTableName(obj.getClass());
+        String tableName = DBUtil.getTableName(obj.getClass());
         try {
-            Map<String, Object> map = DbUtil.getIdField(obj.getClass());
+            Map<String, Object> map = DBUtil.getIdField(obj.getClass());
             Method mSet = (Method) map.get("method_set");
             Method mGet = (Method) map.get("method_get");
             int id = (int) mGet.invoke(obj);
@@ -89,8 +89,8 @@ public class ZDb implements IDb {
     @Override
     public void save(Object obj) {
         checkBeforeSave(obj);
-        String tableName = DbUtil.getTableName(obj.getClass());
-        ContentValues c = DbUtil.getContentValues(obj);
+        String tableName = DBUtil.getTableName(obj.getClass());
+        ContentValues c = DBUtil.getContentValues(obj);
         Log.v(TAG, tableName);
         Cursor cursor = db.rawQuery(SqlBuilder.buildSelectByIdNeedValue(obj.getClass()), new String[]{c.get("id").toString()});
         if (cursor.getCount() < 1)
@@ -117,7 +117,7 @@ public class ZDb implements IDb {
         c.moveToFirst();
         do {
             try {
-                T t = DbUtil.initObject(tClass, c);
+                T t = DBUtil.initObject(tClass, c);
                 list.add(t);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

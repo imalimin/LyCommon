@@ -1,6 +1,5 @@
 package com.lmy.lycommon.cache;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import java.lang.ref.SoftReference;

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by 李明艺 on 2015/10/16.
  */
-public interface IDb {
+public interface IDB {
     void save(Object obj);
 
     <T> List<T> queryBySql(Class<T> tClass, String sql);

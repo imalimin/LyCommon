@@ -1,6 +1,6 @@
 package com.lmy.lycommon.db;
 
-import com.lmy.zutil.annotation.Id;
+import com.lmy.lycommon.annotation.Id;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,32 +35,32 @@ public class SqlBuilder {
     public final static String TYPE_BYTES = "byte[]";
 
     public static String buildCheck(Class clazz) throws NoSuchFieldException {
-        return "CREATE TABLE IF NOT EXISTS " + DbUtil.getTableName(clazz) + " (" + getTableParameter(clazz) + ");";
+        return "CREATE TABLE IF NOT EXISTS " + DBUtil.getTableName(clazz) + " (" + getTableParameter(clazz) + ");";
     }
 
     public static String buildExistCheck(Class clazz) {
-        return "SELECT COUNT(*) AS c FROM sqlite_master WHERE type ='table' AND name ='" + DbUtil.getTableName(clazz) + "' ";
+        return "SELECT COUNT(*) AS c FROM sqlite_master WHERE type ='table' AND name ='" + DBUtil.getTableName(clazz) + "' ";
     }
 
     public static String buildSelectByIdNeedValue(Class clazz) {
-        return "SELECT * FROM " + DbUtil.getTableName(clazz) + " WHERE id=?";
+        return "SELECT * FROM " + DBUtil.getTableName(clazz) + " WHERE id=?";
     }
 
     public static String buildSelect(Class clazz) {
-        return "SELECT * FROM " + DbUtil.getTableName(clazz);
+        return "SELECT * FROM " + DBUtil.getTableName(clazz);
     }
 
     public static String buildSelect(Class clazz, String orderBy) {
-        return "SELECT * FROM " + DbUtil.getTableName(clazz) + " ORDER BY " + orderBy;
+        return "SELECT * FROM " + DBUtil.getTableName(clazz) + " ORDER BY " + orderBy;
     }
 
     public static String buildSelectByWhere(Class clazz, String where) {
-        return "SELECT * FROM " + DbUtil.getTableName(clazz) + " WHERE " + where;
+        return "SELECT * FROM " + DBUtil.getTableName(clazz) + " WHERE " + where;
     }
 
     public static String buildDelete(Object obj) {
         try {
-            return "DELETE FROM " + DbUtil.getTableName(obj.getClass()) + " WHERE " + getTableParameter(obj);
+            return "DELETE FROM " + DBUtil.getTableName(obj.getClass()) + " WHERE " + getTableParameter(obj);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -68,22 +68,22 @@ public class SqlBuilder {
     }
 
     public static String buildDeleteByWhere(Class clazz, String where) {
-        return "DELETE FROM " + DbUtil.getTableName(clazz) + " WHERE " + where;
+        return "DELETE FROM " + DBUtil.getTableName(clazz) + " WHERE " + where;
     }
 
     public static String buildSelectByWhere(Class clazz, String where, String orderBy) {
-        String sql = "SELECT * FROM " + DbUtil.getTableName(clazz);
+        String sql = "SELECT * FROM " + DBUtil.getTableName(clazz);
         if (where != null && !where.equals("")) sql += " WHERE " + where;
         if (orderBy != null || !orderBy.equals("")) sql += " ORDER BY " + orderBy;
         return sql;
     }
 
     public static String buildDropAll(Class clazz) {
-        return "DROP TABLE IF EXISTS " + DbUtil.getTableName(clazz);
+        return "DROP TABLE IF EXISTS " + DBUtil.getTableName(clazz);
     }
 
     public static String buildDeleteAll(Class clazz) {
-        return "DELETE FROM " + DbUtil.getTableName(clazz);
+        return "DELETE FROM " + DBUtil.getTableName(clazz);
     }
 
     public static String getFieldType(Field f) {
@@ -111,7 +111,7 @@ public class SqlBuilder {
         Field[] fields = cls.getDeclaredFields();
         for (Field f : fields) {
             f.setAccessible(true);
-            if (DbUtil.isInt(f) && f.isAnnotationPresent(Id.class) && f.getName().equals("id")) {
+            if (DBUtil.isInt(f) && f.isAnnotationPresent(Id.class) && f.getName().equals("id")) {
                 if (hasId) throw new NoSuchFieldException("Field id must be one!");
                 hasId = true;
                 idSql = f.getName() + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,";
@@ -133,7 +133,7 @@ public class SqlBuilder {
             f.setAccessible(true);
             String type = f.getType().getCanonicalName();
             try {
-                Method m = obj.getClass().getDeclaredMethod(DbUtil.getMethodNameOfGet(f));
+                Method m = obj.getClass().getDeclaredMethod(DBUtil.getMethodNameOfGet(f));
                 if (m != null) {
                     Object o = m.invoke(obj);
                     if (o == null) {

@@ -2,14 +2,10 @@ package com.lmy.lycommon.cache;
 
 import android.graphics.Bitmap;
 
-import java.io.File;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by 明艺 on 2015/7/21.
