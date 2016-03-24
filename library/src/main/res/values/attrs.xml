@@ -12,7 +12,7 @@
         <attr name="textColorNormal" format="color|reference"/>
         <attr name="cardViewDrawable" format="reference"/>
     </declare-styleable>
-    <declare-styleable name="LProgressBar">
+    <declare-styleable name="ProgressBar">
         <attr name="max" format="integer" />
         <attr name="progress" format="integer" />
         <attr name="interruptSize" format="dimension" />
@@ -21,7 +21,7 @@
         <attr name="progressColor" format="color" />
         <attr name="interruptColor" format="color" />
     </declare-styleable>
-    <declare-styleable name="LTabLayout">
+    <declare-styleable name="TabLayout">
         <attr name="tabOrientation" format="integer" />
     </declare-styleable>
 </resources>

@@ -2,9 +2,8 @@ package com.lmy.lycommon.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
-import com.lmy.zutil.annotation.Id;
+import com.lmy.lycommon.annotation.Id;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,8 +15,8 @@ import java.util.Map;
 /**
  * Created by 李明艺 on 2015/10/13.
  */
-public class DbUtil {
-    private final static String TAG = DbUtil.class.getSimpleName();
+public class DBUtil {
+    private final static String TAG = DBUtil.class.getSimpleName();
 
     public static String getTableName(Class cls) {
         return cls.getName().replace(".", "_");

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Library</string>
-    <string name="app_name">Fingerprint Application</string>
     <string name="action_settings">Settings</string>
     <string name="fp_fail">指纹验证未通过</string>
     <string name="fp_ok">指纹验证通过</string>

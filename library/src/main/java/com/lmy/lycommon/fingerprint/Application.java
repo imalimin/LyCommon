@@ -16,6 +16,23 @@
 
 package com.lmy.lycommon.fingerprint;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Base64;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.lmy.lycommon.R;
+import com.lmy.lycommon.fingerprint.utils.AccountManager;
+import com.lmy.lycommon.fingerprint.utils.C;
+import com.lmy.lycommon.fingerprint.utils.Crypto;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,23 +46,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Random;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Base64;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.lmy.common.R;
-import com.lmy.common.fingerprint.utils.AccountManager;
-import com.lmy.common.fingerprint.utils.C;
-import com.lmy.common.fingerprint.utils.Crypto;
 
 public class Application {
 
