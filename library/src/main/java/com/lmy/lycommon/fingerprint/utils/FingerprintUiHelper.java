@@ -1,4 +1,4 @@
-package com.lmy.lycommon.widget;
+package com.lmy.lycommon.fingerprint.utils;
 
 import android.annotation.TargetApi;
 import android.hardware.fingerprint.FingerprintManager;

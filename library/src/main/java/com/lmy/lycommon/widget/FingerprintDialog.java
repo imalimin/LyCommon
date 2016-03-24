@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.lmy.lycommon.R;
 import com.lmy.lycommon.fingerprint.Application;
+import com.lmy.lycommon.fingerprint.utils.FingerprintUiHelper;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
