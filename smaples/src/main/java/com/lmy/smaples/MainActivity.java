@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(String result) {
+                Log.v("000", "result=" + result);
                 textView.setText("result=" + result);
             }
 
