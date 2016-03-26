@@ -3,9 +3,10 @@ package com.lmy.lycommon.http;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.lmy.lycommon.utils.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -103,7 +104,7 @@ public class HttpUtil implements IHttpUtil {
          * 获取响应码 200=成功 当响应成功，获取响应的流
          */
         int code = connection.getResponseCode();
-        String[] result = new String[1];
+        String[] result = new String[]{""};
         if (code == 200) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String lines;
@@ -111,7 +112,7 @@ public class HttpUtil implements IHttpUtil {
                 result[0] += lines;
             }
         } else {
-            result = new String[2];
+            result = new String[]{"", ""};
             result[0] = String.valueOf(code);
             result[1] = "Error!";
         }
@@ -138,15 +139,15 @@ public class HttpUtil implements IHttpUtil {
          * 获取响应码 200=成功 当响应成功，获取响应的流
          */
         int code = connection.getResponseCode();
-        String[] result = new String[1];
+        String[] result = new String[]{""};
         if (code == 200) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String lines;
+            String lines = "";
             while ((lines = reader.readLine()) != null) {
                 result[0] += lines;
             }
         } else {
-            result = new String[2];
+            result = new String[]{"", ""};
             result[0] = String.valueOf(code);
             result[1] = "Error!";
         }
