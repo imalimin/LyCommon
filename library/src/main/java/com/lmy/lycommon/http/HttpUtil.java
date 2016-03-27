@@ -9,9 +9,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,13 +24,12 @@ import java.util.UUID;
  * Created by lmy on 2016/3/26.
  */
 public class HttpUtil implements IHttpUtil {
-    public final static int EXECUTE_TYPE_GET = 0x00;
-    public final static int EXECUTE_TYPE_POST = 0x01;
     public final static int TIME_OUT_DEFAULT = 10000;
     public final static String CHARSET_DEFAULT = "utf-8";
     public final static String BOUNDARY = UUID.randomUUID().toString(); //边界标识 随机生成
     public final static String PREFIX = "--", LINE_END = "\r\n";
     public final static String CONTENT_TYPE = "multipart/form-data"; //内容类型
+    private CookieManager mCookieManager;
     private int timeOut;
     private String charset;
 
@@ -37,13 +41,23 @@ public class HttpUtil implements IHttpUtil {
         return new HttpUtil(timeOut, charset);
     }
 
-    private HttpUtil() {
+    protected HttpUtil() {
         this(TIME_OUT_DEFAULT, CHARSET_DEFAULT);
     }
 
     private HttpUtil(int timeOut, String charset) {
         this.timeOut = timeOut;
         this.charset = charset;
+        initCookieManager();
+    }
+
+    private void initCookieManager() {
+        this.mCookieManager = new CookieManager();
+        // 将规则改掉，接受所有的 Cookie
+        this.mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+        // 保存这个定制的 CookieManager
+        CookieHandler.setDefault(mCookieManager);
+//        mCookieManager.getCookieStore().removeAll();
     }
 
     @Override
@@ -67,9 +81,9 @@ public class HttpUtil implements IHttpUtil {
             checkType(task.getType());
             try {
                 switch (task.getType()) {
-                    case EXECUTE_TYPE_GET:
+                    case HttpTask.EXECUTE_TYPE_GET:
                         return doGet(this, task);
-                    case EXECUTE_TYPE_POST:
+                    case HttpTask.EXECUTE_TYPE_POST:
                         return doPost(this, task);
                 }
             } catch (SocketTimeoutException e) {
@@ -96,14 +110,13 @@ public class HttpUtil implements IHttpUtil {
     }
 
     private void checkType(int type) {
-        if (type > EXECUTE_TYPE_POST || type < EXECUTE_TYPE_GET)
+        if (type > HttpTask.EXECUTE_TYPE_POST || type < HttpTask.EXECUTE_TYPE_GET)
             throw new RuntimeException("This type(" + type + ") of request is not supported!");
     }
 
     private String[] doGet(AsyncHttpTask asyncTask, HttpTask task) throws IOException {
         asyncTask.progress(0);
-        HttpURLConnection connection = initConnection(task.getURL(), EXECUTE_TYPE_POST);
-        setCookies(connection);
+        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.EXECUTE_TYPE_POST);
         int code = connection.getResponseCode();
         String[] result = new String[]{""};
         if (code == 200) {
@@ -124,18 +137,20 @@ public class HttpUtil implements IHttpUtil {
 
     private String[] doPost(AsyncHttpTask asyncTask, HttpTask task) throws IOException {
         asyncTask.progress(0);
-        HttpURLConnection connection = initConnection(task.getURL(), EXECUTE_TYPE_POST);
-        setCookies(connection);
-        OutputStream os = connection.getOutputStream();//打开输出流
-        StringBuffer sb = parseParams(task.getParams());
-        byte[] paramsByteArray = sb.toString().getBytes();
-        byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END)
-                .getBytes();
-        os.write(paramsByteArray);
-        os.write(end_data);
-        os.write(LINE_END.getBytes());
-        os.flush();
-        os.close();
+        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.EXECUTE_TYPE_POST);
+//        setCookies(connection);
+        if (task.getParams() != null) {//如果有参数则打开输出流提交
+            OutputStream os = connection.getOutputStream();//打开输出流
+            StringBuffer sb = parseParams(task.getParams());
+            byte[] paramsByteArray = sb.toString().getBytes();
+            byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END)
+                    .getBytes();
+            os.write(paramsByteArray);
+            os.write(end_data);
+            os.write(LINE_END.getBytes());
+            os.flush();
+            os.close();
+        }
         int code = connection.getResponseCode();
         String[] result = new String[]{""};
         if (code == 200) {
@@ -149,6 +164,7 @@ public class HttpUtil implements IHttpUtil {
             result[0] = String.valueOf(code);
             result[1] = "Error!";
         }
+        Log.v(HttpUtil.class, "After: " + mCookieManager.getCookieStore().getCookies().toString());
         connection.disconnect();
         asyncTask.progress(100);
         return result;
@@ -171,10 +187,6 @@ public class HttpUtil implements IHttpUtil {
         return sb;
     }
 
-    private void setCookies(HttpURLConnection connection) {
-
-    }
-
     @Override
     public void setTimeOut(int timeOut) {
         this.timeOut = timeOut;
@@ -195,6 +207,25 @@ public class HttpUtil implements IHttpUtil {
         return charset;
     }
 
+    @Override
+    public void clearCookies() {
+        mCookieManager.getCookieStore().removeAll();
+    }
+
+    @Override
+    public void setCookies(List<HttpCookie> cookies) {
+        if (cookies == null) return;
+        for (HttpCookie c : cookies)
+            if (!c.hasExpired())
+                mCookieManager.getCookieStore().getCookies().add(c);
+    }
+
+    @Override
+    public List<HttpCookie> getCookies() {
+
+        return mCookieManager.getCookieStore().getCookies();
+    }
+
     private HttpURLConnection initConnection(String url, int type) throws IOException {
         URL u = new URL(url);
         HttpURLConnection conn = (HttpURLConnection) u.openConnection();
@@ -203,12 +234,15 @@ public class HttpUtil implements IHttpUtil {
         conn.setDoInput(true); // 允许输入流
         conn.setDoOutput(true); // 允许输出流
         conn.setUseCaches(false); // 不允许使用缓存
-        if (type == EXECUTE_TYPE_GET) // 请求方式
+        if (type == HttpTask.EXECUTE_TYPE_GET) // 请求方式
             conn.setRequestMethod("GET");
-        else if (type == EXECUTE_TYPE_POST)
+        else if (type == HttpTask.EXECUTE_TYPE_POST)
             conn.setRequestMethod("POST");
         conn.setRequestProperty("Charset", charset);// 设置编码
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36");
         conn.setRequestProperty("connection", "keep-alive");
+        conn.setRequestProperty("Content-Language", "zh-cn");
+        conn.setRequestProperty("Cache-Control", "no-cache");
         conn.setRequestProperty("Content-Type", CONTENT_TYPE + ";boundary=" + BOUNDARY);
         return conn;
     }
