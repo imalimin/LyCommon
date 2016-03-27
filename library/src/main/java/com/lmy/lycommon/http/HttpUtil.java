@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
@@ -71,10 +72,13 @@ public class HttpUtil implements IHttpUtil {
                     case EXECUTE_TYPE_POST:
                         return doPost(this, task);
                 }
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                return new String[]{"408", "Timeout!"};
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return new String[]{"-1", "unknown error!"};
         }
 
         @Override
@@ -100,9 +104,6 @@ public class HttpUtil implements IHttpUtil {
         asyncTask.progress(0);
         HttpURLConnection connection = initConnection(task.getURL(), EXECUTE_TYPE_POST);
         setCookies(connection);
-        /**
-         * 获取响应码 200=成功 当响应成功，获取响应的流
-         */
         int code = connection.getResponseCode();
         String[] result = new String[]{""};
         if (code == 200) {
@@ -135,9 +136,6 @@ public class HttpUtil implements IHttpUtil {
         os.write(LINE_END.getBytes());
         os.flush();
         os.close();
-        /**
-         * 获取响应码 200=成功 当响应成功，获取响应的流
-         */
         int code = connection.getResponseCode();
         String[] result = new String[]{""};
         if (code == 200) {
