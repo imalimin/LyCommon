@@ -6,6 +6,8 @@ import java.util.Map;
  * Created by lmy on 2016/3/26.
  */
 public interface HttpTask {
+    public final static int EXECUTE_TYPE_GET = 0x00;
+    public final static int EXECUTE_TYPE_POST = 0x01;
     HttpTask setURL(String url);
 
     String getURL();
