@@ -57,8 +57,8 @@ public class CameraGLSurfaceView extends GLSurfaceView implements GLSurfaceView.
     }
 
     public void reSize(int width, int height) {
-        getLayoutParams().width=width;
-        getLayoutParams().height=height;
+        getLayoutParams().width = width;
+        getLayoutParams().height = height;
         requestLayout();
     }
 
@@ -200,7 +200,7 @@ public class CameraGLSurfaceView extends GLSurfaceView implements GLSurfaceView.
     }
 
     public CameraInstance cameraInstance() {
-        return CameraInstance.getInstance();
+        return CameraInstance.getInstance(1920, 1080);
     }
 
     public Viewport getDrawViewport() {

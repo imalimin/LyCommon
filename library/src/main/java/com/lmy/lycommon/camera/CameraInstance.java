@@ -14,11 +14,10 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Created by wangyang on 15/7/27.
+ * Created by lmy on 16/2/27.
  */
 
 
-// Camera 仅适用单例
 public class CameraInstance {
     public static final String TAG = "CameraInstance";
 
@@ -37,23 +36,21 @@ public class CameraInstance {
     private int mDefaultCameraID = -1;
 
     private static CameraInstance mThisInstance;
-    private int mPreviewWidth;
-    private int mPreviewHeight;
-
-    private int mPictureWidth = 1000;
-    private int mPictureHeight = 1000;
-
-    private int mPreferPreviewWidth = 640;
-    private int mPreferPreviewHeight = 640;
+    private int mPictureWidth, mPictureHeight;
+    private int mPreviewWidth, mPreviewHeight;
+    private int mWishWidth = 640, mWishHeight = 640;
 
     private int mFacing = 0;
 
-    private CameraInstance() {
+    private CameraInstance(int width, int height) {
+        this.mWishWidth = width;
+        this.mWishHeight = height;
+
     }
 
-    public static synchronized CameraInstance getInstance() {
+    public static synchronized CameraInstance getInstance(int width, int height) {
         if (mThisInstance == null) {
-            mThisInstance = new CameraInstance();
+            mThisInstance = new CameraInstance(width, height);
         }
         return mThisInstance;
     }
@@ -70,17 +67,10 @@ public class CameraInstance {
         return mPreviewHeight;
     }
 
-    public int pictureWidth() {
-        return mPictureWidth;
-    }
 
-    public int pictureHeight() {
-        return mPictureHeight;
-    }
-
-    public void setPreferPreviewSize(int w, int h) {
-        mPreferPreviewHeight = w;
-        mPreferPreviewWidth = h;
+    public void setWishPreviewSize(int w, int h) {
+        mWishWidth = w;
+        mWishHeight = h;
     }
 
     public interface CameraOpenCallback {
@@ -252,7 +242,7 @@ public class CameraInstance {
 
         for (Camera.Size sz : picSizes) {
             Log.i(TAG, String.format("Supported picture size: %d x %d", sz.width, sz.height));
-            if (picSz == null || (sz.width >= mPictureWidth && sz.height >= mPictureHeight)) {
+            if (picSz == null || (sz.width >= mWishWidth && sz.height >= mWishHeight)) {
                 picSz = sz;
             }
         }
@@ -264,7 +254,7 @@ public class CameraInstance {
 
         for (Camera.Size sz : prevSizes) {
             Log.i(TAG, String.format("Supported preview size: %d x %d", sz.width, sz.height));
-            if (prevSz == null || (sz.width >= mPreferPreviewWidth && sz.height >= mPreferPreviewHeight)) {
+            if (prevSz == null || (sz.width >= mWishWidth && sz.height >= mWishHeight)) {
                 prevSz = sz;
             }
         }
@@ -279,19 +269,6 @@ public class CameraInstance {
         if (maxRate > frameRatesRang[1])
             maxRate = frameRatesRang[1];
         mParams.setPreviewFpsRange(minRate, maxRate);
-
-//        List<Integer> frameRates = mParams.getSupportedPreviewFrameRates();
-//        int fpsMax = 0;
-//
-//        for (Integer n : frameRates) {
-//            Log.i(TAG, "Supported frame rate: " + n);
-//            if (fpsMax < n) {
-//                fpsMax = n;
-//            }
-//        }
-//        previewRate = fpsMax;
-//        mParams.setPreviewFrameRate(previewRate); //设置相机预览帧率
-//        mParams.setPreviewFpsRange(20, 60);
 
         mParams.setPreviewSize(prevSz.width, prevSz.height);
         mParams.setPictureSize(picSz.width, picSz.height);
@@ -321,7 +298,7 @@ public class CameraInstance {
 
         Log.i(TAG, String.format("Camera Picture Size: %d x %d", szPic.width, szPic.height));
         Log.i(TAG, String.format("Camera Preview Size: %d x %d", szPrev.width, szPrev.height));
-        Log.i(TAG, String.format("Camera Preview Min Rate: %d Max Rate: %d", minRate,maxRate));
+        Log.i(TAG, String.format("Camera Preview Min Rate: %d Max Rate: %d", minRate, maxRate));
     }
 
     public synchronized void setFocusMode(String focusMode) {
