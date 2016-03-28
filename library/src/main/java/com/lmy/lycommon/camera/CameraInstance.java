@@ -59,6 +59,14 @@ public class CameraInstance {
         return mIsPreviewing;
     }
 
+    public int getPictureWidth() {
+        return mPictureWidth;
+    }
+
+    public int getPictureHeight() {
+        return mPictureHeight;
+    }
+
     public int previewWidth() {
         return mPreviewWidth;
     }
