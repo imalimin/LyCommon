@@ -1,13 +1,13 @@
 package com.lmy.smaples;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.lmy.lycommon.http.DefaultHttpTask;
+import com.lmy.lycommon.http.HttpTask;
 import com.lmy.lycommon.http.HttpUtil;
-import com.lmy.lycommon.http.IHttpUtil;
 
 public class MainActivity extends AppCompatActivity {
     private String url = "http://192.168.99.160:8080/dinner/User_login";
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         textView = (TextView) findViewById(R.id.result);
-        DefaultHttpTask task = DefaultHttpTask.create(HttpUtil.EXECUTE_TYPE_POST, url, new DefaultHttpTask.HttpExecuteLinstener() {
+        DefaultHttpTask task = DefaultHttpTask.create(HttpTask.EXECUTE_TYPE_POST, url, new DefaultHttpTask.HttpExecuteLinstener() {
 
             @Override
             public void onSuccess(String result) {
