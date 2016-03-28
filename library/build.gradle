@@ -17,6 +17,19 @@ android {
         }
     }
 }
+//定义一个函数，target是生成jar包的文件名，classDir是class文件所在的文件夹
+def makeJar(String target, String classDir) {
+    exec {
+        executable "jar"   //调用jar
+        args "cvf", target
+        args "-C", classDir
+        args "", "."
+    }
+}
+//新建一个task,名为buildLib,依赖build(build是一个自带的task)
+task buildLib(dependsOn: ['build']) << {
+    makeJar("build/lycommon.jar", "build/intermediates/classes/release")
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
