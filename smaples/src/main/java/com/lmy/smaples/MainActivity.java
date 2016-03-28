@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.lmy.lycommon.gles.widget.CameraGLSurfaceView;
-import com.lmy.lycommon.gles.widget.ShotGLSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
 
