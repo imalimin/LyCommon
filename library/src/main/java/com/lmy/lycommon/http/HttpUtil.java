@@ -15,6 +15,8 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +93,8 @@ public class HttpUtil implements IHttpUtil {
                 return new String[]{"408", "Timeout!"};
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
             }
             return new String[]{"-1", "unknown error!"};
         }
@@ -114,7 +118,7 @@ public class HttpUtil implements IHttpUtil {
             throw new RuntimeException("This type(" + type + ") of request is not supported!");
     }
 
-    private String[] doGet(AsyncHttpTask asyncTask, HttpTask task) throws IOException {
+    private String[] doGet(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
         asyncTask.progress(0);
         HttpURLConnection connection = initConnection(task.getURL(), HttpTask.EXECUTE_TYPE_POST);
         int code = connection.getResponseCode();
@@ -135,7 +139,7 @@ public class HttpUtil implements IHttpUtil {
         return result;
     }
 
-    private String[] doPost(AsyncHttpTask asyncTask, HttpTask task) throws IOException {
+    private String[] doPost(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
         asyncTask.progress(0);
         HttpURLConnection connection = initConnection(task.getURL(), HttpTask.EXECUTE_TYPE_POST);
 //        setCookies(connection);
@@ -164,7 +168,6 @@ public class HttpUtil implements IHttpUtil {
             result[0] = String.valueOf(code);
             result[1] = "Error!";
         }
-        Log.v(HttpUtil.class, "After: " + mCookieManager.getCookieStore().getCookies().toString());
         connection.disconnect();
         asyncTask.progress(100);
         return result;
@@ -215,9 +218,18 @@ public class HttpUtil implements IHttpUtil {
     @Override
     public void setCookies(List<HttpCookie> cookies) {
         if (cookies == null) return;
-        for (HttpCookie c : cookies)
+        mCookiesCache = cookies;
+    }
+
+    private List<HttpCookie> mCookiesCache;
+
+    private void loadCookies(URI uri) {
+        if (mCookiesCache == null || mCookiesCache.size() == 0) return;
+        Log.v(HttpUtil.class, "loadCookies: " + mCookiesCache.toString());
+        for (HttpCookie c : mCookiesCache)
             if (!c.hasExpired())
-                mCookieManager.getCookieStore().getCookies().add(c);
+                mCookieManager.getCookieStore().add(uri, c);
+        mCookiesCache.clear();
     }
 
     @Override
@@ -226,8 +238,9 @@ public class HttpUtil implements IHttpUtil {
         return mCookieManager.getCookieStore().getCookies();
     }
 
-    private HttpURLConnection initConnection(String url, int type) throws IOException {
+    private HttpURLConnection initConnection(String url, int type) throws IOException, URISyntaxException {
         URL u = new URL(url);
+        loadCookies(u.toURI());
         HttpURLConnection conn = (HttpURLConnection) u.openConnection();
         conn.setReadTimeout(timeOut);
         conn.setConnectTimeout(timeOut);
