@@ -7,7 +7,7 @@
 *@Param int 网络访问类型，这里是Post，Get类型不需要参数
 *@Param HttpExecuteLinstener 回调，网络访问的各种状态都在这里回调
 **/
-DefaultHttpTask task = DefaultHttpTask.create(HttpTask.EXECUTE_TYPE_POST, url, new DefaultHttpTask.HttpExecuteLinstener() {
+StringHttpTask task = StringHttpTask.create(HttpTask.EXECUTE_TYPE_POST, url, new StringHttpTask.HttpExecuteLinstener<String>() {
 
             @Override
             public void onSuccess(String result) {//网络访问成功，result为服务器返回的字符串
