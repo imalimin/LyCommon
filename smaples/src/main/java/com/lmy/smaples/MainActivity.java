@@ -5,12 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.lmy.lycommon.http.DefaultHttpTask;
+import com.lmy.lycommon.http.ByteHttpTask;
 import com.lmy.lycommon.http.HttpTask;
 import com.lmy.lycommon.http.HttpUtil;
+import com.lmy.lycommon.http.StringHttpTask;
 
 public class MainActivity extends AppCompatActivity {
-    private String url = "http://192.168.99.160:8080/dinner/User_login";
+    private String url = "http://www.baidu.com/";
     private TextView textView;
 
     @Override
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         textView = (TextView) findViewById(R.id.result);
-        DefaultHttpTask task = DefaultHttpTask.create(HttpTask.EXECUTE_TYPE_POST, url, new DefaultHttpTask.HttpExecuteLinstener() {
+        StringHttpTask task = StringHttpTask.create(HttpTask.Method.EXECUTE_TYPE_GET, url, new StringHttpTask.HttpExecuteLinstener<String>() {
 
             @Override
             public void onSuccess(String result) {
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("000", "onProgress, progress=" + progress);
             }
         });
-        task.addParam("studentId", "2012213738").addParam("passWord", "3131031");
+//        task.addParam("studentId", "2012213738").addParam("passWord", "3131031");
         HttpUtil.create().execute(task);
     }
 }
