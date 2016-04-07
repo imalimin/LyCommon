@@ -1,7 +1,7 @@
 # LyCommon
 ### A quick framework for Android.Include network,database,image cache.Without anyother dependencies.
 ###关于网络
-1. 新建一个任务(Task)：
+1、新建一个任务(Task)：
 ```
 /**
 *@Param int 网络访问类型，这里是Post，Get类型不需要参数
@@ -26,15 +26,15 @@ DefaultHttpTask task = DefaultHttpTask.create(HttpTask.EXECUTE_TYPE_POST, url, n
             }
         });
 ```
-2. 为Task添加参数(Get方法不需要)：
+2、为Task添加参数(Get方法不需要)：
 ```
 task.addParam("param0", "param0").addParam("param1", "param1");
 ```
-3. 执行Task：
+3、执行Task：
 ```
 HttpUtil.create().execute(task);
 ```
-4. Cookie的支持：
+4、Cookie的支持：
 ```
 HttpUtil..setCookies(yourCookies);
 ```
@@ -42,7 +42,7 @@ HttpUtil..setCookies(yourCookies);
 ###关于数据库
 以Model类为例
 
-1. 首先需要为你的Model类添加一个id字段：
+1、首先需要为你的Model类添加一个id字段：
 ```
 public class Model{
     @Id//添加注解，很重要
@@ -62,11 +62,11 @@ public class Model{
 }
 ```
 
-2. 保存到数据库：
+2、保存到数据库：
 ```
 LyDB.instance(mContext).save(model);
 ```
-3. 取出Model：
+3、取出Model：
 ```
 LyDB.instance(mContext).query(Model.class);
 ```
