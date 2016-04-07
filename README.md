@@ -34,6 +34,10 @@ task.addParam("param0", "param0").addParam("param1", "param1");
 ```
 HttpUtil.create().execute(task);
 ```
+4. Cookie的支持：
+```
+HttpUtil..setCookies(yourCookies);
+```
 
 ###关于数据库
 以Model类为例
