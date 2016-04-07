@@ -1,17 +1,20 @@
 package com.lmy.smaples;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lmy.lycommon.http.ByteHttpTask;
+import com.lmy.lycommon.http.BitmapHttpTask;
 import com.lmy.lycommon.http.HttpTask;
 import com.lmy.lycommon.http.HttpUtil;
 import com.lmy.lycommon.http.StringHttpTask;
 
 public class MainActivity extends AppCompatActivity {
-    private String url = "http://www.baidu.com/";
+    private String url = "http://pic.to8to.com/attch/day_160218/20160218_a9c8ab4599980f55577bp7at2oEwM7s9.png";
+    private ImageView imageView;
     private TextView textView;
 
     @Override
@@ -22,13 +25,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        imageView = (ImageView) findViewById(R.id.image);
         textView = (TextView) findViewById(R.id.result);
-        StringHttpTask task = StringHttpTask.create(HttpTask.Method.EXECUTE_TYPE_GET, url, new StringHttpTask.HttpExecuteLinstener<String>() {
+        HttpTask task = BitmapHttpTask.create(HttpTask.Method.EXECUTE_TYPE_POST, url, new BitmapHttpTask.HttpExecuteLinstener<Bitmap>() {
 
             @Override
-            public void onSuccess(String result) {
+            public void onSuccess(Bitmap result) {
                 Log.v("000", "result=" + result);
-                textView.setText("result=" + result);
+                imageView.setImageBitmap(result);
+//                textView.setText("result=" + result);
             }
 
             @Override
