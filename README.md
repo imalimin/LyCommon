@@ -1,6 +1,5 @@
 # LyCommon
 ### A quick framework for Android.Include network,database,image cache.Without anyother dependencies.
-
 ###关于网络
 1. 新建一个任务(Task)：
 ```
