@@ -78,21 +78,38 @@ public class HttpUtil implements IHttpUtil {
             publishProgress(progress);
         }
 
+        private String[] respone(HttpURLConnection connection) throws IOException {
+            int code = connection.getResponseCode();
+            String[] result = new String[0];
+            if (code == 200) {
+                task.setResponeData(task.parseRespone(connection.getInputStream()));//缓存响应数据
+            } else {
+                result = new String[]{"", ""};
+                result[0] = String.valueOf(code);
+                result[1] = "Error!";
+            }
+            connection.disconnect();
+            return result;
+        }
+
         @Override
         protected String[] doInBackground(HttpTask... params) {
             checkType(task.getType());
             try {
+                HttpURLConnection connection = null;
                 switch (task.getType()) {
-                    case HttpTask.EXECUTE_TYPE_GET:
-                        return doGet(this, task);
-                    case HttpTask.EXECUTE_TYPE_POST:
-                        return doPost(this, task);
+                    case HttpTask.Method.EXECUTE_TYPE_GET:
+                        connection = doGet(this, task);
+                    case HttpTask.Method.EXECUTE_TYPE_POST:
+                        connection = doPost(this, task);
                 }
+                return respone(connection);
             } catch (SocketTimeoutException e) {
                 e.printStackTrace();
                 return new String[]{"408", "Timeout!"};
             } catch (IOException e) {
                 e.printStackTrace();
+                return new String[]{"-2", "InputStream Error!"};
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -102,9 +119,9 @@ public class HttpUtil implements IHttpUtil {
         @Override
         protected void onPostExecute(String[] result) {
             if (result == null) task.getHttpExecuteLinstener().onError(-1, "unknown error!");
-            else if (result.length >= 2)
+            else if (result.length == 2)
                 task.getHttpExecuteLinstener().onError(Integer.parseInt(result[0]), result[1]);
-            else task.getHttpExecuteLinstener().onSuccess(result[0]);
+            else task.getHttpExecuteLinstener().onSuccess(task.getResponeData());
         }
 
         @Override
@@ -114,34 +131,19 @@ public class HttpUtil implements IHttpUtil {
     }
 
     private void checkType(int type) {
-        if (type > HttpTask.EXECUTE_TYPE_POST || type < HttpTask.EXECUTE_TYPE_GET)
+        if (type > HttpTask.Method.EXECUTE_TYPE_POST || type < HttpTask.Method.EXECUTE_TYPE_GET)
             throw new RuntimeException("This type(" + type + ") of request is not supported!");
     }
 
-    private String[] doGet(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
+    private HttpURLConnection doGet(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
         asyncTask.progress(0);
-        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.EXECUTE_TYPE_POST);
-        int code = connection.getResponseCode();
-        String[] result = new String[]{""};
-        if (code == 200) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String lines;
-            while ((lines = reader.readLine()) != null) {
-                result[0] += lines;
-            }
-        } else {
-            result = new String[]{"", ""};
-            result[0] = String.valueOf(code);
-            result[1] = "Error!";
-        }
-        connection.disconnect();
-        asyncTask.progress(100);
-        return result;
+        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.Method.EXECUTE_TYPE_POST);
+        return connection;
     }
 
-    private String[] doPost(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
+    private HttpURLConnection doPost(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
         asyncTask.progress(0);
-        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.EXECUTE_TYPE_POST);
+        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.Method.EXECUTE_TYPE_POST);
 //        setCookies(connection);
         if (task.getParams() != null) {//如果有参数则打开输出流提交
             OutputStream os = connection.getOutputStream();//打开输出流
@@ -155,22 +157,7 @@ public class HttpUtil implements IHttpUtil {
             os.flush();
             os.close();
         }
-        int code = connection.getResponseCode();
-        String[] result = new String[]{""};
-        if (code == 200) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String lines = "";
-            while ((lines = reader.readLine()) != null) {
-                result[0] += lines;
-            }
-        } else {
-            result = new String[]{"", ""};
-            result[0] = String.valueOf(code);
-            result[1] = "Error!";
-        }
-        connection.disconnect();
-        asyncTask.progress(100);
-        return result;
+        return connection;
     }
 
     private StringBuffer parseParams(Map<String, String> map) {
@@ -247,9 +234,9 @@ public class HttpUtil implements IHttpUtil {
         conn.setDoInput(true); // 允许输入流
         conn.setDoOutput(true); // 允许输出流
         conn.setUseCaches(false); // 不允许使用缓存
-        if (type == HttpTask.EXECUTE_TYPE_GET) // 请求方式
+        if (type == HttpTask.Method.EXECUTE_TYPE_GET) // 请求方式
             conn.setRequestMethod("GET");
-        else if (type == HttpTask.EXECUTE_TYPE_POST)
+        else if (type == HttpTask.Method.EXECUTE_TYPE_POST)
             conn.setRequestMethod("POST");
         conn.setRequestProperty("Charset", charset);// 设置编码
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36");

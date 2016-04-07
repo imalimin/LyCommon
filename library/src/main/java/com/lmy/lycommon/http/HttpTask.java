@@ -1,13 +1,13 @@
 package com.lmy.lycommon.http;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
  * Created by lmy on 2016/3/26.
  */
-public interface HttpTask {
-    public final static int EXECUTE_TYPE_GET = 0x00;
-    public final static int EXECUTE_TYPE_POST = 0x01;
+public interface HttpTask<T> {
     HttpTask setURL(String url);
 
     String getURL();
@@ -22,15 +22,26 @@ public interface HttpTask {
 
     Map<String, String> getParams();
 
-    HttpTask setHttpExecuteLinstener(HttpExecuteLinstener linstener);
+    void setResponeData(T data);
+
+    T getResponeData();
+
+    T parseRespone(InputStream inputStream) throws IOException;
+
+    HttpTask setHttpExecuteLinstener(HttpExecuteLinstener<T> linstener);
 
     HttpExecuteLinstener getHttpExecuteLinstener();
 
-    public interface HttpExecuteLinstener {
-        void onSuccess(String result);
+    public interface HttpExecuteLinstener<T> {
+        void onSuccess(T result);
 
         void onError(int code, String msg);
 
         void onProgress(int progress);
+    }
+
+    public class Method {
+        public final static int EXECUTE_TYPE_GET = 0x00;
+        public final static int EXECUTE_TYPE_POST = 0x01;
     }
 }
