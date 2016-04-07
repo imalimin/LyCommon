@@ -1,7 +1,9 @@
 package com.lmy.lycommon.http;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -29,6 +31,13 @@ public class BitmapHttpTask extends BaseHttpTask<Bitmap> {
 
     @Override
     public Bitmap parseRespone(InputStream inputStream) throws IOException {
-        return null;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int n;
+        while (-1 != (n = inputStream.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+        byte[] data = output.toByteArray();
+        return BitmapFactory.decodeByteArray(data, 0, data.length);
     }
 }
