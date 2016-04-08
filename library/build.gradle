@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+ext.globleVersionName = "0.1.23"
 
 android {
     compileSdkVersion 23
@@ -9,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName globleVersionName
     }
     buildTypes {
         release {
@@ -24,14 +25,13 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:design:23.2.0'
+//    compile 'com.android.support:design:23.2.0'
     compile 'com.android.support:appcompat-v7:23.2.0'
 
 }
 
 /*arr相关*/
-version = "0.1"//发布版本号
+version = globleVersionName//发布版本号
 apply plugin: 'com.github.dcendents.android-maven'// 发布插件
 apply plugin: 'com.jfrog.bintray'// 发布插件
 def siteUrl = 'https://github.com/lmylr/LyCommon'    // project homepage
@@ -45,7 +45,8 @@ install {
             project {
                 packaging 'aar'
                 // Add your description here
-                name 'A quick framework for Android.Include network,database,image cache.Without anyother dependencies.'     //项目描述
+                name 'A quick framework for Android.Include network,database,image cache.Without anyother dependencies.'
+                //项目描述
                 url siteUrl
                 // Set your license
                 licenses {
@@ -105,7 +106,7 @@ bintray {
     }
 }
 javadoc {
-    options{
+    options {
         encoding "UTF-8"
         charSet 'UTF-8'
         author true
