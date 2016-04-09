@@ -137,13 +137,15 @@ public class HttpUtil implements IHttpUtil {
 
     private HttpURLConnection doGet(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
         asyncTask.progress(0);
-        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.Method.EXECUTE_TYPE_POST);
+        HttpURLConnection connection = initConnection(task.getURL(), task.getType());
+        connection.connect();
         return connection;
     }
 
     private HttpURLConnection doPost(AsyncHttpTask asyncTask, HttpTask task) throws IOException, URISyntaxException {
         asyncTask.progress(0);
-        HttpURLConnection connection = initConnection(task.getURL(), HttpTask.Method.EXECUTE_TYPE_POST);
+        HttpURLConnection connection = initConnection(task.getURL(), task.getType());
+        connection.connect();
 //        setCookies(connection);
         if (task.getParams() != null) {//如果有参数则打开输出流提交
             OutputStream os = connection.getOutputStream();//打开输出流
@@ -231,19 +233,21 @@ public class HttpUtil implements IHttpUtil {
         HttpURLConnection conn = (HttpURLConnection) u.openConnection();
         conn.setReadTimeout(timeOut);
         conn.setConnectTimeout(timeOut);
-        conn.setDoInput(true); // 允许输入流
-        conn.setDoOutput(true); // 允许输出流
-        conn.setUseCaches(false); // 不允许使用缓存
-        if (type == HttpTask.Method.EXECUTE_TYPE_GET) // 请求方式
-            conn.setRequestMethod("GET");
-        else if (type == HttpTask.Method.EXECUTE_TYPE_POST)
-            conn.setRequestMethod("POST");
         conn.setRequestProperty("Charset", charset);// 设置编码
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36");
         conn.setRequestProperty("connection", "keep-alive");
         conn.setRequestProperty("Content-Language", "zh-cn");
         conn.setRequestProperty("Cache-Control", "no-cache");
         conn.setRequestProperty("Content-Type", CONTENT_TYPE + ";boundary=" + BOUNDARY);
+        if (type == HttpTask.Method.EXECUTE_TYPE_GET) { // 请求方式
+            conn.setDoInput(true); // 允许输入流
+            conn.setRequestMethod("GET");
+        } else if (type == HttpTask.Method.EXECUTE_TYPE_POST) {
+            conn.setDoOutput(true); // 允许输出流
+            conn.setDoInput(true); // 允许输入流
+            conn.setUseCaches(false); // 不允许使用缓存
+            conn.setRequestMethod("POST");
+        }
         return conn;
     }
 }
