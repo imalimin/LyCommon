@@ -110,6 +110,8 @@ public class SqlBuilder {
         String idSql = "";
         Field[] fields = cls.getDeclaredFields();
         for (Field f : fields) {
+            if (DBUtil.isStatic(f.getModifiers()))
+                continue;
             f.setAccessible(true);
             if (DBUtil.isInt(f) && f.isAnnotationPresent(Id.class) && f.getName().equals("id")) {
                 if (hasId) throw new NoSuchFieldException("Field id must be one!");

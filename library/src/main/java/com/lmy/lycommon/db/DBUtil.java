@@ -47,6 +47,8 @@ public class DBUtil {
         ContentValues c = new ContentValues();
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field f : fields) {
+            if (isStatic(f.getModifiers()))
+                continue;
             f.setAccessible(true);
             try {
                 Method m = obj.getClass().getDeclaredMethod(getMethodNameOfGet(f));
@@ -166,5 +168,8 @@ public class DBUtil {
         return false;
     }
 
+    public static boolean isStatic(int mod) {
+        return (mod & java.lang.reflect.Modifier.STATIC) == java.lang.reflect.Modifier.STATIC;
+    }
 
 }
