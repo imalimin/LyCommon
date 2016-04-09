@@ -1,5 +1,6 @@
 package com.lmy.lycommon.http;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -21,6 +22,12 @@ public interface HttpTask<T> {
     String getParam(String key);
 
     Map<String, String> getParams();
+
+    HttpTask addFile(String key, File file);
+
+    File getFile(String key);
+
+    Map<String, File> getFileMap();
 
     void setResponeData(T data);
 

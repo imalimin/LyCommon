@@ -1,5 +1,8 @@
 package com.lmy.lycommon.http;
 
+import com.lmy.lycommon.utils.Log;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +13,7 @@ public abstract class BaseHttpTask<T> implements HttpTask<T> {
     private String url;
     private int type;
     private Map<String, String> params;
+    private Map<String, File> mFileMap;
     private HttpExecuteLinstener httpExecuteLinstener;
     private T responeData;
 
@@ -60,6 +64,29 @@ public abstract class BaseHttpTask<T> implements HttpTask<T> {
         if (params == null)
             return null;
         return params.get(key);
+    }
+
+    @Override
+    public HttpTask addFile(String key, File file) {
+        if (mFileMap == null) this.mFileMap = new HashMap<>();
+        if (!file.exists()) {
+            Log.w(BaseHttpTask.class, "File(" + file.getAbsolutePath() + ") not exists!");
+            return this;
+        }
+        mFileMap.put(key, file);
+        return this;
+    }
+
+    @Override
+    public File getFile(String key) {
+        if (mFileMap == null)
+            return null;
+        return mFileMap.get(key);
+    }
+
+    @Override
+    public Map<String, File> getFileMap() {
+        return mFileMap;
     }
 
     @Override
