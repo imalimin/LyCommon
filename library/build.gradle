@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-ext.globleVersionName = "0.1.23"
+ext.globleVersionName = "0.2.23"
 
 android {
     compileSdkVersion 23
