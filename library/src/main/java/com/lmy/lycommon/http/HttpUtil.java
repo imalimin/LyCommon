@@ -5,8 +5,11 @@ import android.support.annotation.NonNull;
 
 import com.lmy.lycommon.utils.Log;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -24,7 +27,7 @@ import java.util.UUID;
  * Created by lmy on 2016/3/26.
  */
 public class HttpUtil implements IHttpUtil {
-    public final static int TIME_OUT_DEFAULT = 10000;
+    public final static int TIME_OUT_DEFAULT = 60000;
     public final static String CHARSET_DEFAULT = "utf-8";
     public final static String BOUNDARY = UUID.randomUUID().toString(); //边界标识 随机生成
     public final static String PREFIX = "--", LINE_END = "\r\n";
@@ -98,8 +101,10 @@ public class HttpUtil implements IHttpUtil {
                 switch (task.getType()) {
                     case HttpTask.Method.EXECUTE_TYPE_GET:
                         connection = doGet(this, task);
+                        break;
                     case HttpTask.Method.EXECUTE_TYPE_POST:
                         connection = doPost(this, task);
+                        break;
                 }
                 return respone(connection);
             } catch (SocketTimeoutException e) {
@@ -145,18 +150,40 @@ public class HttpUtil implements IHttpUtil {
         HttpURLConnection connection = initConnection(task.getURL(), task.getType());
         connection.connect();
 //        setCookies(connection);
+        byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
+        DataOutputStream dos = new DataOutputStream(connection.getOutputStream());//打开输出流
         if (task.getParams() != null) {//如果有参数则打开输出流提交
-            OutputStream os = connection.getOutputStream();//打开输出流
             StringBuffer sb = parseParams(task.getParams());
             byte[] paramsByteArray = sb.toString().getBytes();
-            byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END)
-                    .getBytes();
-            os.write(paramsByteArray);
-            os.write(end_data);
-            os.write(LINE_END.getBytes());
-            os.flush();
-            os.close();
+            dos.write(paramsByteArray);
+//            dos.write(LINE_END.getBytes());
         }
+        Map<String, File> map = task.getFileMap();
+        if (map != null) {
+            for (Map.Entry<String, File> entry : map.entrySet()) {
+                StringBuffer fileSb = new StringBuffer();
+                fileSb.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"; filename=\""
+                        + entry.getValue().getName() + "\"" + LINE_END);
+                fileSb.append("Content-Type: application/octet-stream; charset="
+                        + charset + LINE_END);
+                fileSb.append(LINE_END);
+                byte[] fileByteArray = fileSb.toString().getBytes();
+                dos.write(fileByteArray);
+
+                InputStream is = new FileInputStream(entry.getValue());
+                byte[] bytes = new byte[1024];
+                int len = 0;
+                while ((len = is.read(bytes)) != -1) {
+                    dos.write(bytes, 0, len);
+                }
+                is.close();
+            }
+        }
+        //结束数据传输
+        dos.write(end_data);
+        dos.write(LINE_END.getBytes());
+        dos.flush();
+        dos.close();
         return connection;
     }
 
