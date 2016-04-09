@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         imageView = (ImageView) findViewById(R.id.image);
         textView = (TextView) findViewById(R.id.result);
-        HttpTask task = BitmapHttpTask.create(HttpTask.Method.EXECUTE_TYPE_POST, url, new BitmapHttpTask.HttpExecuteLinstener<Bitmap>() {
+        HttpTask task = BitmapHttpTask.create(HttpTask.Method.EXECUTE_TYPE_GET, url, new BitmapHttpTask.HttpExecuteLinstener<Bitmap>() {
 
             @Override
             public void onSuccess(Bitmap result) {
