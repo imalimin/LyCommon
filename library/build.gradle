@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-ext.globleVersionName = "0.2.23"
+version = "0.3.23"
 
 android {
     compileSdkVersion 23
@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName globleVersionName
+        versionName version
     }
     buildTypes {
         release {
@@ -31,7 +31,7 @@ dependencies {
 }
 
 /*arr相关*/
-version = globleVersionName//发布版本号
+version = version //发布版本号
 apply plugin: 'com.github.dcendents.android-maven'// 发布插件
 apply plugin: 'com.jfrog.bintray'// 发布插件
 def siteUrl = 'https://github.com/lmylr/LyCommon'    // project homepage
