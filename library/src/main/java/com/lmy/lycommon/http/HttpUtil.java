@@ -152,16 +152,13 @@ public class HttpUtil implements IHttpUtil {
 //        setCookies(connection);
         byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
         DataOutputStream dos = new DataOutputStream(connection.getOutputStream());//打开输出流
-        if (task.getParams() != null) {//如果有参数则打开输出流提交
-            StringBuffer sb = parseParams(task.getParams());
-            byte[] paramsByteArray = sb.toString().getBytes();
-            dos.write(paramsByteArray);
-//            dos.write(LINE_END.getBytes());
-        }
         Map<String, File> map = task.getFileMap();
         if (map != null) {
             for (Map.Entry<String, File> entry : map.entrySet()) {
                 StringBuffer fileSb = new StringBuffer();
+                fileSb.append(PREFIX);
+                fileSb.append(BOUNDARY);
+                fileSb.append(LINE_END);
                 fileSb.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"; filename=\""
                         + entry.getValue().getName() + "\"" + LINE_END);
                 fileSb.append("Content-Type: application/octet-stream; charset="
@@ -177,7 +174,13 @@ public class HttpUtil implements IHttpUtil {
                     dos.write(bytes, 0, len);
                 }
                 is.close();
+                dos.write(LINE_END.getBytes());
             }
+        }
+        if (task.getParams() != null) {//如果有参数则打开输出流提交
+            StringBuffer sb = parseParams(task.getParams());
+            byte[] paramsByteArray = sb.toString().getBytes();
+            dos.write(paramsByteArray);
         }
         //结束数据传输
         dos.write(end_data);
@@ -260,7 +263,7 @@ public class HttpUtil implements IHttpUtil {
         conn.setConnectTimeout(timeOut);
         conn.setRequestProperty("Charset", charset);// 设置编码
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36");
-        conn.setRequestProperty("connection", "keep-alive");
+        conn.setRequestProperty("Connection", "Keep-Alive");
         conn.setRequestProperty("Content-Language", "zh-cn");
         conn.setRequestProperty("Cache-Control", "no-cache");
         conn.setRequestProperty("Content-Type", CONTENT_TYPE + ";boundary=" + BOUNDARY);
